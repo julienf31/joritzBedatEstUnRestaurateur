@@ -17,10 +17,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
-
 Route::group(['middleware' => ['auth']], function () {
     Route::resource('caterorie','CategorieController');
     Route::resource('ingredient','IngredientController');
     Route::resource('recette','RecetteController');
-
 });

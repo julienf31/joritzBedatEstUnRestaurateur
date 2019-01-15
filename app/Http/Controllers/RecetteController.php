@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Categorie;
+use App\Image;
+use App\Ingredient;
 use App\Recette;
 use Illuminate\Http\Request;
 
@@ -26,7 +29,10 @@ class RecetteController extends Controller
      */
     public function create()
     {
-        return view('recette.creer');
+        $categories = Categorie::all();
+        $ingredients = Ingredient::all();
+
+        return view('recette.creer', compact('categories','ingredients'));
     }
 
     /**
@@ -40,8 +46,17 @@ class RecetteController extends Controller
         $recette = new Recette();
         $recette->titre = $request->titre;
         $recette->description = $request->description;
-        $recette->categorie = 1;
+        $recette->categorie = $request->categorie;
         $recette->save();
+
+        foreach ($request->images as $image){
+            $i = new Image();
+            $i->recette_id = $recette->id;
+            $i->url = substr($image->store('public/recettes/'.$recette->id), 7);
+            $i->save();
+        }
+        $recette->ingredients()->sync($request->ingredients);
+
         return redirect(route('recette.index'));
     }
 
